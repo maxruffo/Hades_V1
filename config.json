@@ -1,0 +1,6 @@
+{
+    "TICKER": "BTCUSDT",
+    "START_DATE": "2022-01-01",
+    "END_DATE": "2024-11-01",
+    "INTERVAL_MINUTES": 5
+}
