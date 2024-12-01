@@ -1,53 +1,94 @@
-# Hades V1
+# MultiInputLSTM für die Vorhersage von Preiskursen mit ResidualBlocks und AttentionLayers
 
-## How does the Code Work?
+Dieses Projekt untersucht die Anwendung verschiedener LSTM-Modelle zur Vorhersage von Zeitreihen mit Finanzdaten. Durch die Kombination von **ResidualBlocks** und **Attention Layers** werden Modellarchitekturen getestet, die sowohl Trends als auch Details in Daten erfassen können.
 
-### 1. Data Acquisition
-- Firstly the User decides the Ticker-Pair of the Currecy he wants to trade.
-- He chooses the Timeframe of the Data he wants to use.
-- The Data is then downloaded from the Binance API. -> binance_utils.py (DataDownloader)
-- The Code sends a get request to the API for every single Day, becuase there is a limit of 1000 candles per request.
-- For Performance reasons the request are parallelized with the help of the ThreadPoolExecutor.
-- All the CSV Files are then stored in the Data Folder.
-- the Data is then loaded into a Pandas DataFrame.
-- The data is merged to a single DataFrame and stored in a CSV File.
-- Then the Trading Signals (SMA_50, SMA_200, EMA_50, EMA_200, MACD, MACD_Signal, MACD_Hist, RSI, BB_upper, BB_middle, BB_lower, Slowk, Slowd, ADX, STDDEV, Ichimoku_Conversion, Ichimoku_Base, Ichimoku_SpanA, Ichimoku_SpanB) are calculated and added to the DataFrame
-- The Dataframe is stored in a CSV File.
+## Inhaltsverzeichnis
 
-### 2. LTSM Training
-- The Data is loaded from the CSV File.
+1. [Projektübersicht](#projektübersicht)
+2. [Dateistruktur](#dateistruktur)
+3. [Features](#features)
+4. [Modellarchitekturen](#modellarchitekturen)
+5. [Training und Optimierung](#training-und-optimierung)
+6. [Evaluation](#evaluation)
+7. [Zukünftige Arbeit](#zukünftige-arbeit)
 
+---
 
-- reinforcment_learning.py
-- q learning
-- sequentz demension 
+## Projektübersicht
 
+Dieses Projekt basiert auf Finanzdaten von BTCUSDT und beinhaltet folgende Schritte:
+- Datenextraktion und -vorbereitung mithilfe der Binance-API.
+- Berechnung und Visualisierung technischer Indikatoren.
+- Entwicklung und Testen von LSTM-Architekturen mit unterschiedlichen Erweiterungen.
+- Evaluation der Modelle auf neuen Daten.
 
+---
 
-### Encountered Problems
-#### Binance
-- The Binance API has a limit of 1000 candles per request. To get the data for a longer timeframe, the requests have to be parallelized.
-- The Data is stored in CSV Files, which is not the most efficient way to store the data. A better way would be to store the data in a Database.
-#### Training
-- The Training of the LSTM Model is very slow. The Model has to be trained on a GPU to get reasonable results.
-- The Model has to be trained on a lot of Data to get reasonable results.
-- There were to many features at the beginning, which slowed down the training process. The features had to be reduced to get reasonable results.
-- Training ist gerade sehr langsam, da es auf der CPU läuft.
+## Dateistruktur
 
-## Todo
-1. Custom_layer und Attention Layer erstellen
-2. Bestes Model evaluiren -> varianz und mean quadrieren und vergleichen
-3. Code aufräumen
-4. Sowas wie Adapative Learning Rate einbauen und EarlyStopping
-5. 
+Die wichtigsten Verzeichnisse und Dateien des Projekts:
 
+- `Data Analysis and Visualization`: Skripte zur Datenanalyse und Visualisierung.
+- `Evaluation_PNGs`: Ergebnisse und Grafiken für die Modellbewertung.
+- `Experiment 1`: Basismodell (MultiInputLSTM).
+- `Experiment 2`: Erweiterung um ResidualBlocks.
+- `Experiment 3`: Kombination von ResidualBlocks und Attention Layers.
+- `src/main/data_preprocessing`: Code für Datenvorverarbeitung und Signalberechnung.
+- `config.json`: Konfiguration für die Datenextraktion.
+- `requirements.txt`: Abhängigkeiten des Projekts.
 
+---
 
-# Testen ob es ein Tren ist oder nicht durchschnittliche Änderung mean und varianz quadriereung wäre
-# Wie durchscnittliche Veränderung und die Varianz ich quadriere die Varianz und vergleiche die MSE
-# Custom Layer machen Standard Layers von Papers
-# Sauber evaluiren
-# Strukturierte Aufbau der Präsentation
-# Smaple nehmen wie die Input daten sind
-# Modell Architektur
-# Qualtität der Evaluation
+## Features
+
+Die berechneten Indikatoren umfassen:
+- **SMA/EMA**: Erkennung von Trends (50/200-Tage-Gleitender Durchschnitt).
+- **MACD**: Momentum-Indikator.
+
+---
+
+## Modellarchitekturen
+
+### 1. Basismodell: MultiInputLSTM
+Ein LSTM-Modell, das mehrere Eingaben berücksichtigt und direkt Preisvorhersagen trifft.
+
+### 2. Erweiterung: ResidualBlocks
+- **Vorteil**: Reduzierte Probleme wie vanishing gradients.
+- **Implementierung**: Lineare Transformationen, Normalisierung, Aktivierung und Skip-Verbindungen.
+
+### 3. Erweiterung: Attention Layers
+- Fokus auf relevante Teile der Sequenzdaten.
+- Kombiniert mit ResidualBlocks für detaillierte Vorhersagen.
+
+---
+
+## Training und Optimierung
+
+- **Loss-Funktion**: Mean Squared Error (MSE) zur Bestrafung kleiner Fehler.
+- **Optimierer**: Adam (adaptives Lernen).
+- **Learning Rate Scheduler**: ReduceLROnPlateau zur Effizienzsteigerung.
+- **Early Stopping**: Vermeidung von Overfitting durch frühzeitiges Beenden des Trainings.
+
+---
+
+## Evaluation
+
+- **Testdaten**: BTCUSDT-Daten vom 01.11.2024 bis 25.11.2024.
+- **Ergebnisse**:
+  - Das Modell zeigt hohe Robustheit gegenüber kleinen Datenabweichungen.
+  - Erfassung von Langzeittrends, jedoch Glättung von schnellen Preisspitzen.
+- **MSE vs. Trendvarianz**:
+  - MSE < Quadratische Varianz: Modell erfasst Gesamttrends erfolgreich.
+
+---
+
+## Zukünftige Arbeit
+
+- Erweiterung der Features (z. B. Sentiment-Analysen).
+- Optimierung der Architektur zur Erfassung kurzfristiger Preisschwankungen.
+- Integration weiterer Datenquellen zur Verbesserung der Vorhersagequalität.
+- Scaler Verbesserungen
+
+---
+
+## Vielen Dank
